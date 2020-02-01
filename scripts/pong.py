@@ -11,6 +11,9 @@ player_id = 0
 network_tick = 10
 network_tick_interval = 10
 
+p2_current_x = 0
+p2_last_x = 0
+
 is_left_pressed = False
 is_right_pressed = False
 
@@ -99,8 +102,11 @@ screen.update()
 
 def network():
     # Send where we're at, and get back the other player's posiion
-    p2_pos_x = int(pong('move', {'player': player_id, 'x': p1.xcor()}))
-    p2.setposition(p2_pos_x, p2.ycor())
+    global p2_current_x
+    global p2_last_x
+
+    p2_last_x = p2_current_x
+    p2_current_x = int(pong('move', {'player': player_id, 'x': p1.xcor()}))
 
 
 def game_loop():
@@ -110,6 +116,9 @@ def game_loop():
     p1_pos = p1.xcor() + velocity
     p1_pos = max(-200 + paddle_width / 2, min(200 - paddle_width / 2, p1_pos))
     p1.setposition(p1_pos, p1.ycor())
+
+    p2_pos = p2_current_x
+    p2.setposition(p2_current_x, p2.ycor())
 
     # l00p
     screen.update()

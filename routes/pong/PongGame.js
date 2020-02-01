@@ -6,17 +6,15 @@ module.exports = function () {
   this.addPlayer = function (player) {
     // Add player, allowing only the latest 2 to join
     // this.players = this.players.concat([player]).slice(-2);
-    this.players.unshift(player);
+    this.players.push(player);
   };
 
   this.movePlayer = function (id, x) {
     const player = this.players.find(p => p.id === id);
     player.x = x;
-    player.lastUpdate = Date.now;
+    player.lastUpdate = Date.now();
 
-    this.players.sort((a, b) => {
-      return b.lastUpdate - a.lastUpdate;
-    });
+    this.players = this.players.filter(p => p.lastUpdate > player.lastUpdate - 1000);
   };
 
   this.getOtherPlayer = function (id) {
