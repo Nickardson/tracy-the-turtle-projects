@@ -31,9 +31,17 @@ router
     runningGame.movePlayer(player, data.x);
 
     const other = runningGame.getOtherPlayer(data.player);
-    const otherX = other ? Math.floor(other.x) : 0;
+    const [otherX] = other ? runningGame.projectIntoLocal('away', other.x, other.y) : [0, NaN];
+
     const ball = runningGame.ball;
-    res.send(`${otherX},${ball.x},${ball.y},${ball.velocityX},${ball.velocityY}`);
+    const [ballX, ballY] = runningGame.projectIntoLocal(data.player, ball.x, ball.y);
+    const [ballVelocityX, ballVelocityY] = runningGame.projectIntoLocal(data.player, ball.velocityX, ball.velocityY);
+
+    res.send(`${otherX},${ballX},${ballY},${ballVelocityX},${ballVelocityY}`);
   });
+
+setInterval(() => {
+  runningGame.tick();
+}, 1000 / 30 * 10);
 
 module.exports = router;
