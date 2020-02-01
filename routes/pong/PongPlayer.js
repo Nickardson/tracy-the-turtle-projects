@@ -7,4 +7,6 @@ module.exports = function (isHome) {
 
   // Home or Away
   this.home = isHome;
+
+  this.score = 0;
 };

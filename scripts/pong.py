@@ -5,7 +5,7 @@ import random
 
 paddle_width = 50
 paddle_height = 10
-paddle_separation = 150
+paddle_separation = 140
 
 player_id = 'home'
 player_is_home = True
@@ -208,6 +208,8 @@ def network():
     global ball_last_y
     global ball_velocity_x
     global ball_velocity_y
+    global home_score
+    global away_score
 
     p2_last_x = p2_current_x
     ball_last_x = ball_current_x
@@ -222,6 +224,8 @@ def network():
     ball_current_y = int(move_results[2])
     ball_velocity_x = int(move_results[3])
     ball_velocity_y = int(move_results[4])
+    home_score = int(move_results[5])
+    away_score = int(move_results[6])
 
 
 def draw_score():

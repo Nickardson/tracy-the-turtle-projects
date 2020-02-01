@@ -7,7 +7,7 @@ module.exports = function () {
 
   this.ball = new PongBall();
 
-  this.paddleSeparation = 150;
+  this.paddleSeparation = 140;
   this.paddleWidth = 50;
   this.paddleHeight = 10;
   this.ballRadius = 10;
@@ -43,13 +43,13 @@ module.exports = function () {
 
   this.projectIntoLocal = function (observerHomeAway, x, y) {
     if (observerHomeAway === 'home') {
-      return [x,y];
+      return [x, y];
     } else {
       return [-x, -y];
     }
   };
 
-  this.tick = function() {
+  this.tick = function () {
     this.ball.x += this.ball.velocityX;
     this.ball.y += this.ball.velocityY;
 
@@ -58,10 +58,17 @@ module.exports = function () {
       this.ball.velocityX *= -1;
     }
 
-    // TODO: temp
-    // Bounce off top and bottom walls
-    if (this.ball.y <= -200 + this.ballRadius || this.ball.y >= 200 - this.ballRadius) {
+    // Home player failed
+    if (this.ball.y < -200 + this.ballRadius) {
+      this.away.score++;
       this.ball.velocityY *= -1;
+      // this.ball.y = -200 + this.ballRadius;
+    }
+    // Away player failed
+    if (this.ball.y > 200 - this.ballRadius) {
+      this.home.score++;
+      this.ball.velocityY *= -1;
+      // this.ball.y = 200 - this.ballRadius;
     }
 
     // Home player hit?
