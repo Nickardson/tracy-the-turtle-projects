@@ -39,8 +39,7 @@
 
 
   <script type="text/javascript">
-    var codeOrgPreamble = `
-import turtle
+    var codeOrgPreamble = `import turtle
 __turtle = turtle.Turtle()
 world_coords = None
 if world_coords:
@@ -254,8 +253,10 @@ def setworldcoordinates(llx, lly, urx, ury):
         console.log('success');
       },
         function (err) {
+          const lineOffset = codeOrgPreamble.match(/\n/g).length + 1;
+          const realLineNo = err.traceback[0].lineno - lineOffset;
           outf(err.toString());
-          console.log(err, err.toString());
+          console.log(err, err.toString(), 'real line', realLineNo);
         });
     }
 

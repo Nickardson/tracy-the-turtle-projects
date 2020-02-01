@@ -7,7 +7,8 @@ paddle_width = 50
 paddle_height = 10
 paddle_separation = 150
 
-player_id = 0
+player_id = 'home'
+player_is_home = True
 network_tick = 10
 network_tick_interval = 10
 
@@ -32,15 +33,17 @@ def pong(url, data):
 
 def login():
     global player_id
-    player_id = int(ping('login'))
-    print('Welcome, user ' + str(player_id))
+    global player_is_home
+    player_id = ping('login')
+    player_is_home = player_id == 'home'
+    print('Welcome, ' + player_id + ' team!')
 
 
-screen = turtle.Screen()
+screen=turtle.Screen()
 bgcolor("black")
 
 # Ping-pong ball
-ball = screen.turtles()[0]
+ball=screen.turtles()[0]
 ball.color("white")
 ball.shape("circle")
 ball.penup()
@@ -50,35 +53,32 @@ screen.register_shape("paddle", ((-paddle_width / 2, 0), (paddle_width / 2, 0),
 
 
 def create_paddle():
-    paddle = turtle.Turtle()
+    paddle=turtle.Turtle()
     paddle.setheading(90)
     paddle.shape("paddle")
     paddle.penup()
     return paddle
 
 
-login()
-
-
 def left():
     global is_left_pressed
     global is_right_pressed
-    is_left_pressed = True
-    is_right_pressed = False
+    is_left_pressed=True
+    is_right_pressed=False
 
 
 def right():
     global is_left_pressed
     global is_right_pressed
-    is_left_pressed = False
-    is_right_pressed = True
+    is_left_pressed=False
+    is_right_pressed=True
 
 
 def stop():
     global is_left_pressed
     global is_right_pressed
-    is_left_pressed = False
-    is_right_pressed = False
+    is_left_pressed=False
+    is_right_pressed=False
 
 
 screen.onkey(left, "Left")
@@ -89,11 +89,11 @@ screen.listen()
 
 
 def get_movement_direction():
-    direction = 0
+    direction=0
     if is_left_pressed:
-        direction = direction - 1
+        direction=direction - 1
     if is_right_pressed:
-        direction = direction + 1
+        direction=direction + 1
     return direction
 
 
@@ -109,41 +109,49 @@ def network():
     global p2_current_x
     global p2_last_x
 
-    p2_last_x = p2_current_x
-    p2_current_x = int(pong('move', {'player': player_id, 'x': p1.xcor()}))
+    p2_last_x=p2_current_x
+
+    # Returns EnemyX,BallX,BallY,BallVelocityX,BallVelocityY
+    move_result=pong('move', {'player': player_id, 'x': p1.xcor()})
+    move_results=move_result.split(',')
+
+    p2_current_x=int(move_results[0])
 
 
 def game_loop():
     global network_tick
 
-    network_interpolation = (network_tick_interval - network_tick) / float(network_tick_interval)
+    network_interpolation=(network_tick_interval - \
+                           network_tick) / float(network_tick_interval)
 
-    velocity = get_movement_direction() * 5
-    p1_pos = p1.xcor() + velocity
-    p1_pos = max(-200 + paddle_width / 2, min(200 - paddle_width / 2, p1_pos))
+    velocity=get_movement_direction() * 5
+    p1_pos=p1.xcor() + velocity
+    p1_pos=max(-200 + paddle_width / 2, min(200 - paddle_width / 2, p1_pos))
     p1.setposition(p1_pos, p1.ycor())
 
-    p2_pos = interpolate(p2_last_x, p2_current_x, network_interpolation)
+    p2_pos=interpolate(p2_last_x, p2_current_x, network_interpolation)
     p2.setposition(p2_pos, p2.ycor())
 
     # l00p
     screen.update()
     screen.ontimer(game_loop, 1 / 30)
 
-    network_tick = network_tick - 1
+    network_tick=network_tick - 1
     if network_tick <= 0:
-        network_tick = network_tick_interval
+        network_tick=network_tick_interval
         network()
 
 
+login()
+
 # Ready Player One
-p1 = create_paddle()
+p1=create_paddle()
 p1.setposition(0, -paddle_separation)
-p1.color("lightblue")
+p1.color("lightblue" if player_is_home else "red")
 # Ready Player Two
-p2 = create_paddle()
+p2=create_paddle()
 p2.setposition(0, paddle_separation)
 p2.right(180)
-p2.color("red")
+p2.color("red" if player_is_home else "lightblue")
 
 game_loop()

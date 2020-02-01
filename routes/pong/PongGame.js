@@ -1,30 +1,38 @@
 const PongPlayer = require('./PongPlayer');
+const PongBall = require('./PongBall');
 
 module.exports = function () {
-  this.players = [];
+  this.home = new PongPlayer(true);
+  this.away = new PongPlayer(false);
+
+  this.ball = new PongBall();
 
   this.addPlayer = function (player) {
-    // Add player, allowing only the latest 2 to join
-    // this.players = this.players.concat([player]).slice(-2);
-    this.players.push(player);
+    if (player.home) {
+      this.home = player;
+    } else {
+      this.away = player;
+    }
   };
 
-  this.movePlayer = function (id, x) {
-    const player = this.players.find(p => p.id === id);
-    if (!player) {
-      return;
+  this.getPlayer = function (homeAway) {
+    if (homeAway === 'home') {
+      return this.home;
+    } else {
+      return this.away;
     }
+  };
 
+  this.getOtherPlayer = function (homeAway) {
+    if (homeAway === 'home') {
+      return this.away;
+    } else {
+      return this.home;
+    }
+  };
+
+  this.movePlayer = function (player, x) {
     player.x = x;
     player.lastUpdate = Date.now();
-
-    this.players = this.players.filter(p => p.lastUpdate > player.lastUpdate - 1000);
   };
-
-  this.getOtherPlayer = function (id) {
-    return this.players.find(p => p.id !== id);
-  };
-
-  this.addPlayer(new PongPlayer());
-  this.addPlayer(new PongPlayer());
 };

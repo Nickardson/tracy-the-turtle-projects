@@ -13,23 +13,27 @@ function decodePythonDict(str) {
 router
   .use(express.static('routes/pong'));
 
+var nextIsHome = true;
 router
   .get('/api/login', function (req, res) {
-    const newPlayer = new PongPlayer();
+    const newPlayer = new PongPlayer(nextIsHome);
+    nextIsHome = !nextIsHome;
     runningGame.addPlayer(newPlayer);
 
-    res.send(newPlayer.id.toString());
+    res.send(newPlayer.home ? 'home' : 'away');
   });
 
 router
   .get('/api/move', function (req, res) {
     const data = decodePythonDict(req.query.data);
-    runningGame.movePlayer(data.player, data.x);
+    const player = runningGame.getPlayer(data.player);
+
+    runningGame.movePlayer(player, data.x);
 
     const other = runningGame.getOtherPlayer(data.player);
-
     const otherX = other ? Math.floor(other.x) : 0;
-    res.send(otherX.toString());
+    const ball = runningGame.ball;
+    res.send(`${otherX},${ball.x},${ball.y},${ball.velocityX},${ball.velocityY}`);
   });
 
 module.exports = router;
