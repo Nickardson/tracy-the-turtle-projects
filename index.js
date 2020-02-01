@@ -27,7 +27,10 @@ app.get('/script/:name', function (req, res) {
       if (err) {
         console.log(err);
       }
-      const highlighted = marked('```python\n' + scriptData + '\n```\n');
+      let highlighted = scriptData;
+      if (scriptData.length < 1024 * 30) {
+        highlighted = marked('```python\n' + scriptData + '\n```\n');
+      }
       res.send(templateData.toString().replace('{code}', highlighted).replace('{code_raw}', scriptData));
     });
   });
