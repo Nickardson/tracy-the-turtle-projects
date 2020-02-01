@@ -42,6 +42,6 @@ router
 
 setInterval(() => {
   runningGame.tick();
-}, 1000 / 30 * 10);
+}, 1000 / 30);
 
 module.exports = router;

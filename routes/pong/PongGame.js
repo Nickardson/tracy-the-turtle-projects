@@ -7,6 +7,11 @@ module.exports = function () {
 
   this.ball = new PongBall();
 
+  this.paddleSeparation = 150;
+  this.paddleWidth = 50;
+  this.paddleHeight = 10;
+  this.ballRadius = 10;
+
   this.addPlayer = function (player) {
     if (player.home) {
       this.home = player;
@@ -48,11 +53,26 @@ module.exports = function () {
     this.ball.x += this.ball.velocityX;
     this.ball.y += this.ball.velocityY;
 
-    if (this.ball.x <= -200 || this.ball.x >= 200) {
+    // Bounce off left-right walls
+    if (this.ball.x <= -200 + this.ballRadius || this.ball.x >= 200 - this.ballRadius) {
       this.ball.velocityX *= -1;
     }
 
-    if (this.ball.y <= -200 || this.ball.y >= 200) {
+    // TODO: temp
+    // Bounce off top and bottom walls
+    if (this.ball.y <= -200 + this.ballRadius || this.ball.y >= 200 - this.ballRadius) {
+      this.ball.velocityY *= -1;
+    }
+
+    // Home player hit?
+    if (Math.abs(this.ball.x - this.home.x) < this.paddleWidth / 1.2 && this.ball.y <= -this.paddleSeparation) {
+      this.ball.y = -this.paddleSeparation + this.paddleHeight + this.ballRadius;
+      this.ball.velocityY *= -1;
+    }
+
+    // Away player hit?
+    if (Math.abs(-this.ball.x - this.away.x) < this.paddleWidth / 1.2 && this.ball.y >= this.paddleSeparation) {
+      this.ball.y = this.paddleSeparation - this.paddleHeight - this.ballRadius;
       this.ball.velocityY *= -1;
     }
   };
