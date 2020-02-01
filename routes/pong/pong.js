@@ -35,11 +35,10 @@ router
 
     const ball = runningGame.ball;
     const [ballX, ballY] = runningGame.projectIntoLocal(data.player, ball.x, ball.y);
-    const [ballVelocityX, ballVelocityY] = runningGame.projectIntoLocal(data.player, ball.velocityX, ball.velocityY);
 
     const homeScore = runningGame.home.score;
     const awayScore = runningGame.away.score;
-    res.send(`${otherX},${ballX},${ballY},${ballVelocityX},${ballVelocityY},${homeScore},${awayScore}`);
+    res.send(`${otherX},${Math.floor(ballX)},${Math.floor(ballY)},${homeScore},${awayScore}`);
   });
 
 setInterval(() => {

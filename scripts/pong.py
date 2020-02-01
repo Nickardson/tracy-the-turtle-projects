@@ -3,14 +3,16 @@ import urllib.request
 import turtle
 import random
 
+cheat = False
+
 paddle_width = 50
 paddle_height = 10
 paddle_separation = 140
 
 player_id = 'home'
 player_is_home = True
-network_tick = 10
 network_tick_interval = 10
+network_tick = network_tick_interval
 
 p2_current_x = 0
 p2_last_x = 0
@@ -19,8 +21,6 @@ ball_current_x = 0
 ball_current_y = 0
 ball_last_x = 0
 ball_last_y = 0
-ball_velocity_x = 0
-ball_velocity_y = 0
 
 is_left_pressed = False
 is_right_pressed = False
@@ -131,7 +131,6 @@ bgcolor("black")
 # Ping-pong ball
 ball = screen.turtles()[0]
 ball.color("white")
-ball.shape("circle")
 ball.penup()
 
 screen.register_shape("paddle", ((-paddle_width / 2, 0), (paddle_width / 2, 0),
@@ -206,8 +205,6 @@ def network():
     global ball_current_y
     global ball_last_x
     global ball_last_y
-    global ball_velocity_x
-    global ball_velocity_y
     global home_score
     global away_score
 
@@ -215,17 +212,15 @@ def network():
     ball_last_x = ball_current_x
     ball_last_y = ball_current_y
 
-    # Returns EnemyX,BallX,BallY,BallVelocityX,BallVelocityY
+    # Returns EnemyX,BallX,BallY,ScoreHome,ScoreAway
     move_result = pong('move', {'player': player_id, 'x': p1.xcor()})
     move_results = move_result.split(',')
 
     p2_current_x = int(move_results[0])
     ball_current_x = int(move_results[1])
     ball_current_y = int(move_results[2])
-    ball_velocity_x = int(move_results[3])
-    ball_velocity_y = int(move_results[4])
-    home_score = int(move_results[5])
-    away_score = int(move_results[6])
+    home_score = int(move_results[3])
+    away_score = int(move_results[4])
 
 
 def draw_score():
@@ -244,19 +239,23 @@ def game_loop():
     network_interpolation = (network_tick_interval -
                              network_tick) / float(network_tick_interval)
 
-    velocity = get_movement_direction() * 5
-    p1_pos = p1.xcor() + velocity
-    p1_pos = max(-200 + paddle_width / 2, min(200 - paddle_width / 2, p1_pos))
-    p1.setposition(p1_pos, p1.ycor())
-
-    p2_pos = interpolate(p2_last_x, p2_current_x, network_interpolation)
-    p2.setposition(p2_pos, p2.ycor())
-
     ball_pos_x = interpolate(
         ball_last_x, ball_current_x, network_interpolation)
     ball_pos_y = interpolate(
         ball_last_y, ball_current_y, network_interpolation)
     ball.setposition(ball_pos_x, ball_pos_y)
+    ball.setheading(ball_pos_y)
+
+    velocity = get_movement_direction() * 5
+    if cheat:
+        p1_pos = ball_pos_x
+    else:
+        p1_pos = p1.xcor() + velocity
+    p1_pos = max(-200 + paddle_width / 2, min(200 - paddle_width / 2, p1_pos))
+    p1.setposition(p1_pos, p1.ycor())
+
+    p2_pos = interpolate(p2_last_x, p2_current_x, network_interpolation)
+    p2.setposition(p2_pos, p2.ycor())
 
     draw_score()
 

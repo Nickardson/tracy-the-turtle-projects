@@ -2,8 +2,8 @@ const PongPlayer = require('./PongPlayer');
 const PongBall = require('./PongBall');
 
 module.exports = function () {
-  this.home = new PongPlayer(true);
-  this.away = new PongPlayer(false);
+  this.home = new PongPlayer(true, true);
+  this.away = new PongPlayer(false, true);
 
   this.ball = new PongBall();
 
@@ -61,13 +61,13 @@ module.exports = function () {
     // Home player failed
     if (this.ball.y < -200 + this.ballRadius) {
       this.away.score++;
-      this.ball.velocityY *= -1;
+      this.ball.velocityY = this.ball.baseSpeedY;
       // this.ball.y = -200 + this.ballRadius;
     }
     // Away player failed
     if (this.ball.y > 200 - this.ballRadius) {
       this.home.score++;
-      this.ball.velocityY *= -1;
+      this.ball.velocityY = -this.ball.baseSpeedY;
       // this.ball.y = 200 - this.ballRadius;
     }
 
@@ -75,12 +75,26 @@ module.exports = function () {
     if (Math.abs(this.ball.x - this.home.x) < this.paddleWidth / 1.2 && this.ball.y <= -this.paddleSeparation) {
       this.ball.y = -this.paddleSeparation + this.paddleHeight + this.ballRadius;
       this.ball.velocityY *= -1;
+      // this.ball.velocityY *= -1.1;
     }
 
     // Away player hit?
     if (Math.abs(-this.ball.x - this.away.x) < this.paddleWidth / 1.2 && this.ball.y >= this.paddleSeparation) {
       this.ball.y = this.paddleSeparation - this.paddleHeight - this.ballRadius;
       this.ball.velocityY *= -1;
+      // this.ball.velocityY *= -1.1;
     }
+
+    if (this.home.isAI) {
+      this.playerAI(this.home);
+    }
+    if (this.away.isAI) {
+      this.playerAI(this.away);
+    }
+  };
+
+  this.playerAI = function (player) {
+    const [ballLocalX] = this.projectIntoLocal(this.home ? 'away' : 'home', this.ball.x, this.ball.y);
+    player.x = ballLocalX;
   };
 };
