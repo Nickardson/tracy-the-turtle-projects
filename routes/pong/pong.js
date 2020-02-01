@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+const PongGame = require('./PongGame');
 const PongPlayer = require('./PongPlayer');
 
-let players = [];
+const runningGame = new PongGame();
 
 router
   .use(express.static('routes/pong'));
@@ -11,10 +12,7 @@ router
 router
   .get('/api/login', function (req, res) {
     const newPlayer = new PongPlayer();
-
-    // Add player, kicking off the oldest player
-    players.push(newPlayer);
-    players = players.slice(-2);
+    runningGame.addPlayer(newPlayer);
 
     res.send(newPlayer.id.toString());
   });
