@@ -1,16 +1,16 @@
-const express = require('express')
-const app = express()
-const http = require('http')
-const fs = require('fs')
+const express = require('express');
+const app = express();
+const http = require('http');
+const fs = require('fs');
 const cors = require('cors');
 const marked = require('marked');
 const highlight = require('highlight.js');
-const port = 8080
+const port = 8080;
 
 marked.setOptions({
   gfm: true,
   highlight: function (code) {
-    return require('highlight.js').highlightAuto(code).value;
+    return highlight.highlight('python', code).value;
   },
 });
 
@@ -27,14 +27,14 @@ app.get('/script/:name', function (req, res) {
       if (err) {
         console.log(err);
       }
-      const highlighted = marked("```python\n" + scriptData + "\n```");
-      res.send(templateData.toString().replace("{code}", highlighted));
+      const highlighted = marked('```python\n' + scriptData + '\n```\n');
+      res.send(templateData.toString().replace('{code}', highlighted));
     });
   });
 });
 
-const pongRoutes = require('./routes/pong');
-app.use('/pong', pongRoutes)
+const pongRoutes = require('./routes/pong/pong');
+app.use('/pong', pongRoutes);
 
 app.use(express.static('public'));
 // app.use('/320x', express.static('public'));
