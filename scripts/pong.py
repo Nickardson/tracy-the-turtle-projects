@@ -97,6 +97,10 @@ def get_movement_direction():
     return direction
 
 
+def interpolate(x, y, a):
+    return y * a + x * (1 - a)
+
+
 screen.update()
 
 
@@ -112,13 +116,15 @@ def network():
 def game_loop():
     global network_tick
 
+    network_interpolation = (network_tick_interval - network_tick) / float(network_tick_interval)
+
     velocity = get_movement_direction() * 5
     p1_pos = p1.xcor() + velocity
     p1_pos = max(-200 + paddle_width / 2, min(200 - paddle_width / 2, p1_pos))
     p1.setposition(p1_pos, p1.ycor())
 
-    p2_pos = p2_current_x
-    p2.setposition(p2_current_x, p2.ycor())
+    p2_pos = interpolate(p2_last_x, p2_current_x, network_interpolation)
+    p2.setposition(p2_pos, p2.ycor())
 
     # l00p
     screen.update()

@@ -11,6 +11,10 @@ module.exports = function () {
 
   this.movePlayer = function (id, x) {
     const player = this.players.find(p => p.id === id);
+    if (!player) {
+      return;
+    }
+
     player.x = x;
     player.lastUpdate = Date.now();
 

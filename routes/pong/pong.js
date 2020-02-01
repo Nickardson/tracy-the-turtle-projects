@@ -28,7 +28,8 @@ router
 
     const other = runningGame.getOtherPlayer(data.player);
 
-    res.send(Math.floor(other.x).toString());
+    const otherX = other ? Math.floor(other.x) : 0;
+    res.send(otherX.toString());
   });
 
 module.exports = router;
