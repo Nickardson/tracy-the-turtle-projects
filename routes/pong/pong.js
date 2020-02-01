@@ -6,6 +6,10 @@ const PongPlayer = require('./PongPlayer');
 
 const runningGame = new PongGame();
 
+function decodePythonDict(str) {
+  return JSON.parse(str.replace(/'/g, '"'));
+}
+
 router
   .use(express.static('routes/pong'));
 
@@ -15,6 +19,16 @@ router
     runningGame.addPlayer(newPlayer);
 
     res.send(newPlayer.id.toString());
+  });
+
+router
+  .get('/api/move', function (req, res) {
+    const data = decodePythonDict(req.query.data);
+    runningGame.movePlayer(data.player, data.x);
+
+    const other = runningGame.getOtherPlayer(data.player);
+
+    res.send(Math.floor(other.x).toString());
   });
 
 module.exports = router;

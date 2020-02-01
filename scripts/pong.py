@@ -5,6 +5,11 @@ import random
 
 paddle_width = 50
 paddle_height = 10
+paddle_separation = 150
+
+player_id = 0
+network_tick = 10
+network_tick_interval = 10
 
 is_left_pressed = False
 is_right_pressed = False
@@ -17,13 +22,15 @@ def ping(url):
     response = r.read()
     return response
 
-# data = urllib.parse.urlencode({'spam': 1, 'eggs': 2, 'bacon': 0})
-# data = data.encode('ascii')
-# 'url', data
+
+def pong(url, data):
+    return ping(url + '?data=' + str(data))
 
 
 def login():
-    print('Welcome, user ' + ping('login'))
+    global player_id
+    player_id = int(ping('login'))
+    print('Welcome, user ' + str(player_id))
 
 
 screen = turtle.Screen()
@@ -42,7 +49,6 @@ screen.register_shape("paddle", ((-paddle_width / 2, 0), (paddle_width / 2, 0),
 def create_paddle():
     paddle = turtle.Turtle()
     paddle.setheading(90)
-    paddle.color("red")
     paddle.shape("paddle")
     paddle.penup()
     return paddle
@@ -91,19 +97,38 @@ def get_movement_direction():
 screen.update()
 
 
+def network():
+    # Send where we're at, and get back the other player's posiion
+    p2_pos_x = int(pong('move', {'player': player_id, 'x': p1.xcor()}))
+    p2.setposition(p2_pos_x, p2.ycor())
+
+
 def game_loop():
+    global network_tick
+
     velocity = get_movement_direction() * 5
-    p1_pos = p1.position()
-    p1.setposition(p1_pos[0] + velocity, p1_pos[1])
+    p1_pos = p1.xcor() + velocity
+    p1_pos = max(-200 + paddle_width / 2, min(200 - paddle_width / 2, p1_pos))
+    p1.setposition(p1_pos, p1.ycor())
 
     # l00p
     screen.update()
     screen.ontimer(game_loop, 1 / 30)
 
+    network_tick = network_tick - 1
+    if network_tick <= 0:
+        network_tick = network_tick_interval
+        network()
+
 
 # Ready Player One
 p1 = create_paddle()
+p1.setposition(0, -paddle_separation)
+p1.color("lightblue")
 # Ready Player Two
 p2 = create_paddle()
+p2.setposition(0, paddle_separation)
+p2.right(180)
+p2.color("red")
 
 game_loop()
