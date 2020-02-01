@@ -17,6 +17,8 @@ p2_last_x = 0
 
 ball_current_x = 0
 ball_current_y = 0
+ball_last_x = 0
+ball_last_y = 0
 ball_velocity_x = 0
 ball_velocity_y = 0
 
@@ -115,10 +117,14 @@ def network():
     global p2_last_x
     global ball_current_x
     global ball_current_y
+    global ball_last_x
+    global ball_last_y
     global ball_velocity_x
     global ball_velocity_y
 
     p2_last_x = p2_current_x
+    ball_last_x = ball_current_x
+    ball_last_y = ball_current_y
 
     # Returns EnemyX,BallX,BallY,BallVelocityX,BallVelocityY
     move_result = pong('move', {'player': player_id, 'x': p1.xcor()})
@@ -145,7 +151,9 @@ def game_loop():
     p2_pos = interpolate(p2_last_x, p2_current_x, network_interpolation)
     p2.setposition(p2_pos, p2.ycor())
 
-    ball.setposition(ball_current_x, ball_current_y)
+    ball_pos_x = interpolate(ball_last_x, ball_current_x, network_interpolation)
+    ball_pos_y = interpolate(ball_last_y, ball_current_y, network_interpolation)
+    ball.setposition(ball_pos_x, ball_pos_y)
 
     # l00p
     screen.update()
