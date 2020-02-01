@@ -1,0 +1,20 @@
+{
+  "name": "hour-of-code-pong",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "highlight.js": "^9.18.0",
+    "marked": "^0.8.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "dev": "node index.js",
+    "dev:watch": "start http://localhost:8080 && nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
