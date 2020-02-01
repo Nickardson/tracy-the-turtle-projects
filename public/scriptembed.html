@@ -8,13 +8,262 @@
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel='stylesheet' type='text/css' media='screen' href='/css/main.css'>
   <link rel='stylesheet' type='text/css' media='screen' href='/css/syntax.css'>
+
+  <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" type="text/javascript"></script> -->
+  <script src="http://www.skulpt.org/js/skulpt.min.js" type="text/javascript"></script>
+  <script src="http://www.skulpt.org/js/skulpt-stdlib.js" type="text/javascript"></script>
+
   <script src='main.js'></script>
 </head>
 
 <body>
-  <div class="hljs">
-    {code}
+  <div class="embed-container">
+    <div class="code-panel">
+      <div class="hljs">
+        {code}
+      </div>
+    </div>
+
+    <div class="run-panel">
+
+      <h3>Try This</h3>
+      <form>
+        <textarea id="yourcode" cols="40" rows="10">{code_raw}
+    </textarea><br />
+        <button type="button" onclick="runit()">Run</button>
+      </form>
+      <!-- If you want turtle graphics include a canvas -->
+      <div id="mycanvas"></div>
+
+      <pre id="output"></pre>
+    </div>
   </div>
+
+
+  <script type="text/javascript">
+    var codeOrgPreamble = `
+import turtle
+__turtle = turtle.Turtle()
+world_coords = None
+if world_coords:
+    __turtle.getscreen().setworldcoordinates(*world_coords)
+
+__turtle.shape("turtle")
+
+__command_history = []
+
+def degrees(n=None):
+    __command_history.append(['degrees', (n if n else 'None')])
+    return __turtle.degrees(n)
+
+def radians():
+    __command_history.append(['radians'])
+    return __turtle.radians()
+
+def position():
+    __command_history.append(['position'])
+    return __turtle.position()
+
+def towards(x, y=None):
+    __command_history.append(['towards', (x, y if y else 'None')])
+    return __turtle.towards(x, y)
+
+def distance(x, y=None):
+    __command_history.append(['distance', (x, y if y else 'None')])
+    return __turtle.distance(x, y)
+
+def xcor():
+    __command_history.append(['xcor'])
+    return __turtle.xcor()
+
+def ycor():
+    __command_history.append(['ycor'])
+    return __turtle.ycor()
+
+def forward(d):
+    __command_history.append(['forward', (d)])
+    return __turtle.forward(d)
+
+def undo():
+    __command_history.append(['undo'])
+    return __turtle.undo()
+
+def backward(d):
+    __command_history.append(['backward', (d)])
+    return __turtle.backward(d)
+
+def setx(x):
+    __command_history.append(['setx', (x)])
+    return __turtle.setx(x)
+
+def sety(y):
+    __command_history.append(['sety', (y)])
+    return __turtle.sety(y)
+
+def setposition(x, y):
+    __command_history.append(['setposition', (x, y)])
+    return __turtle.setposition(x, y)
+
+def home():
+    __command_history.append(['home'])
+    return __turtle.home()
+
+def right(a):
+    __command_history.append(['right', (a)])
+    return __turtle.right(a)
+
+def left(a):
+    __command_history.append(['left', (a)])
+    return __turtle.left(a)
+
+def circle(radius, extent=None, steps=None):
+    __command_history.append(['circle', (radius, extent if extent else 'None', steps if steps else 'None')])
+    if extent and steps:
+        return __turtle.circle(radius, extent, steps)
+    if extent:
+        return __turtle.circle(radius, extent)
+    if steps:
+        return __turtle.circle(radius, steps=steps)
+    return __turtle.circle(radius)
+
+def penup():
+    __command_history.append(['penup'])
+    return __turtle.penup()
+
+def pendown():
+    __command_history.append(['pendown'])
+    return __turtle.pendown()
+
+def isdown():
+    __command_history.append(['isdown'])
+    return __turtle.isdown()
+
+def speed(s=None):
+    __command_history.append(['speed', (s if s else 'None')])
+    return __turtle.speed(s)
+
+def set_color(color=None):
+    __command_history.append(['color', (color if color else 'None')])
+    return __turtle.color(color)
+
+def color(color=None):
+    __command_history.append(['color', (color if color else 'None')])
+    return __turtle.color(color)
+
+def stamp():
+    __command_history.append(['stamp'])
+    return __turtle.stamp()
+
+def fill(flag):
+    __command_history.append(['fill', (flag)])
+    return __turtle.fill(flag)
+
+def dot(size, color, g, b, a):
+    __command_history.append(['dot', (size, color, g, b, a)])
+    return __turtle.dot(size, color, g, b, a)
+
+def pensize(size):
+    __command_history.append(['pensize', (size)])
+    return __turtle.pensize(size)
+
+def show_turtle():
+    __command_history.append(['show_turtle'])
+    return __turtle.showturtle()
+
+def hide_turtle():
+    __command_history.append(['hide_turtle'])
+    return __turtle.hideturtle()
+
+def shape(shape):
+    __command_history.append(['shape', (shape)])
+    return __turtle.shape(shape)
+
+def window_height():
+    __command_history.append(['window_height'])
+    # scaled window height
+    if world_coords:
+        _, lly, _, ury = world_coords
+        return ury - lly
+    return __turtle.window_height()
+
+def window_width():
+    __command_history.append(['window_width'])
+    # scaled window width
+    if world_coords:
+        llx, _, urx, _ = world_coords
+        return urx - llx
+    return __turtle.window_width()
+
+def reset():
+    __command_history.append(['reset'])
+    return __turtle.reset()
+
+def clear():
+    __command_history.append(['clear'])
+    return __turtle.clear()
+
+def tracer(frames=None, delay=None):
+    __command_history.append(['tracer', (frames if frames else 'None', delay if delay else 'None')])
+    return __turtle.tracer(frames, delay)
+
+def begin_fill():
+    __command_history.append(['begin_fill'])
+    return __turtle.begin_fill()
+
+def end_fill():
+    __command_history.append(['end_fill'])
+    return __turtle.end_fill()
+
+def bgcolor(color=None):
+    __command_history.append(['bgcolor', (color if color else 'None')])
+    return __turtle.getscreen().bgcolor(color)
+
+def setworldcoordinates(llx, lly, urx, ury):
+    __command_history.append(['setworldcoordinates', (llx, lly, urx, ury)])
+    __turtle.getscreen().reset()  # Ensure canvas is valid if this command is not called first
+    set_coordinates_output = __turtle.getscreen().setworldcoordinates(llx, lly, urx, ury)
+    __turtle.shape("turtle")
+    return  set_coordinates_output
+`;
+    // output functions are configurable.  This one just appends some text
+    // to a pre element.
+    function outf(text) {
+      var mypre = document.getElementById("output");
+      mypre.innerHTML = mypre.innerHTML + text;
+    }
+    function builtinRead(x) {
+      if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+        throw "File not found: '" + x + "'";
+      return Sk.builtinFiles["files"][x];
+    }
+
+    // Here's everything you need to run a python program in skulpt
+    // grab the code from your textarea
+    // get a reference to your pre element for output
+    // configure the output function
+    // call Sk.importMainWithBody()
+    function runit() {
+      var prog = document.getElementById("yourcode").value;
+      var mypre = document.getElementById("output");
+      mypre.innerHTML = '';
+      Sk.pre = "output";
+      Sk.configure({ output: outf, read: builtinRead });
+      (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+      var myPromise = Sk.misceval.asyncToPromise(function () {
+        return Sk.importMainWithBody("<stdin>", false, codeOrgPreamble + prog, true);
+      });
+      myPromise.then(function (mod) {
+        console.log('success');
+      },
+        function (err) {
+          outf(err.toString());
+          console.log(err, err.toString());
+        });
+    }
+
+    runit();
+  </script>
+
 </body>
 
 </html>

@@ -28,7 +28,7 @@ app.get('/script/:name', function (req, res) {
         console.log(err);
       }
       const highlighted = marked('```python\n' + scriptData + '\n```\n');
-      res.send(templateData.toString().replace('{code}', highlighted));
+      res.send(templateData.toString().replace('{code}', highlighted).replace('{code_raw}', scriptData));
     });
   });
 });

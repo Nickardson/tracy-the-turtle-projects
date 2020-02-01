@@ -19,3 +19,14 @@ iframe {
 .hljs {
   min-height: 100%;
 }
+
+.embed-container {
+  display: flex;
+}
+.code-panel {
+  width: 33%;
+}
+
+.run-panel {
+  width: 67%;
+}
